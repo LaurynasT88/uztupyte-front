@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import axios from "../services/api";
 import { useNavigate, Link } from "react-router-dom";
 
 const Login = () => {
@@ -12,7 +12,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("/api/auth/login", { username, password });
+      const response = await axios.post("/auth/login", { username, password });
       const token = response.data.jwt;
       localStorage.setItem("token", token); // Store token in local storage
       navigate(role === "ADMIN" ? "/admin" : "/"); // Redirect based on role
