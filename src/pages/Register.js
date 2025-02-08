@@ -15,7 +15,7 @@ const Register = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("/api/auth/register", { username, password});
+      const response = await axios.post("/auth/register", { username, password, email, firstName, lastName});
       setSuccess("Registration successful! Please login.");
       setError("");
       setTimeout(() => navigate("/login"), 2000); // Redirect to login after 2 seconds
