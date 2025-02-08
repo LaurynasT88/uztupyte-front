@@ -1,30 +1,31 @@
 import React, { useState } from "react";
-import axios from "axios";
+import axios from "../services/api";
 import { useNavigate, Link } from "react-router-dom";
 
-const Login = () => {
+const Register = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("CUSTOMER"); // Default role
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("/api/auth/login", { username, password });
-      const token = response.data.jwt;
-      localStorage.setItem("token", token); // Store token in local storage
-      navigate(role === "ADMIN" ? "/admin" : "/"); // Redirect based on role
+      const response = await axios.post("/api/auth/register", { username, password});
+      setSuccess("Registration successful! Please login.");
+      setError("");
+      setTimeout(() => navigate("/login"), 2000); // Redirect to login after 2 seconds
     } catch (err) {
-      setError("Invalid username or password");
+      setError("Registration failed. Please try again.");
+      setSuccess("");
     }
   };
 
   return (
-    <div className="login-container">
-      <h2>Login</h2>
-      <form onSubmit={handleLogin}>
+    <div className="register-container">
+      <h2>Register</h2>
+      <form onSubmit={handleRegister}>
         <div>
           <label>Username:</label>
           <input
@@ -44,13 +45,14 @@ const Login = () => {
           />
         </div>
         {error && <p style={{ color: "red" }}>{error}</p>}
-        <button type="submit">Login</button>
+        {success && <p style={{ color: "green" }}>{success}</p>}
+        <button type="submit">Register</button>
       </form>
       <p>
-        Don't have an account? <Link to="/register">Register here</Link>.
+        Already have an account? <Link to="/login">Login here</Link>.
       </p>
     </div>
   );
 };
 
-export default Login;
+export default Register;
