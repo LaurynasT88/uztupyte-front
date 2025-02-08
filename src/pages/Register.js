@@ -22,6 +22,7 @@ const Register = () => {
     } catch (err) {
       setError("Registration failed. Please try again.");
       setSuccess("");
+      console.error(err);
     }
   };
 
