@@ -43,13 +43,6 @@ const Login = () => {
             required
           />
         </div>
-        <div>
-          <label>Role:</label>
-          <select value={role} onChange={(e) => setRole(e.target.value)}>
-            <option value="CUSTOMER">Customer</option>
-            <option value="ADMIN">Admin</option>
-          </select>
-        </div>
         {error && <p style={{ color: "red" }}>{error}</p>}
         <button type="submit">Login</button>
       </form>
