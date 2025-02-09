@@ -8,6 +8,7 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [role, setRole] = useState("USER"); // Default role is USER
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
@@ -15,7 +16,14 @@ const Register = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("/auth/register", { username, password, email, firstName, lastName});
+      const response = await axios.post("/auth/register", {
+        username,
+        password,
+        email,
+        firstName,
+        lastName,
+        role,
+      });
       setSuccess("Registration successful! Please login.");
       setError("");
       setTimeout(() => navigate("/login"), 2000); // Redirect to login after 2 seconds
@@ -74,6 +82,17 @@ const Register = () => {
             onChange={(e) => setLastName(e.target.value)}
             required
           />
+        </div>
+        <div>
+          <label>Role:</label>
+          <select
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            required
+          >
+            <option value="USER">User</option>
+            <option value="ADMIN">Admin</option>
+          </select>
         </div>
         {error && <p style={{ color: "red" }}>{error}</p>}
         {success && <p style={{ color: "green" }}>{success}</p>}
