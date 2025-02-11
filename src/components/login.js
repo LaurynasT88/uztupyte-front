@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import axios from "../services/api";
-import { useNavigate, Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("CUSTOMER"); // Default role
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -14,8 +14,12 @@ const Login = () => {
     try {
       const response = await axios.post("/auth/login", { username, password });
       const token = response.data.jwt;
-      localStorage.setItem("token", token); // Store token in local storage
-      navigate(role === "ADMIN" ? "/admin" : "/"); // Redirect based on role
+      localStorage.setItem("token", token);
+      const decodedToken = jwtDecode(token);
+      const userRoles = decodedToken.ROLES || [];
+      localStorage.setItem("roles", JSON.stringify(userRoles));
+
+      userRoles.includes("ADMIN") ? navigate("/admin") : navigate("/");
     } catch (err) {
       setError("Invalid username or password");
     }
