@@ -12,13 +12,14 @@ const Admin = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [editProduct, setEditProduct] = useState(null);
-  const [showAddProductForm, setShowAddProductForm] = useState(false); // State to toggle add product form
+  const [showAddProductForm, setShowAddProductForm] = useState(false);
   const [newProduct, setNewProduct] = useState({
     name: "",
     shortDescription: "",
     longDescription: "",
     price: 0,
     quantity: 0,
+    images: [], // New field for multiple images
   });
 
   useEffect(() => {
@@ -33,6 +34,7 @@ const Admin = () => {
           longDescription: product.longDescription,
           price: product.price,
           quantity: product.inventory.quantity,
+          images: product.images, // Assuming the product data has an 'images' field
         }));
 
         setProducts(formattedProducts);
@@ -55,38 +57,16 @@ const Admin = () => {
     }
   };
 
-  const toggleBlockUser = (id) => {
-    setUsers(users.map((user) => (user.id === id ? { ...user, blocked: !user.blocked } : user)));
-  };
-
   const handleEditClick = (product) => {
     setEditProduct(product);
   };
 
   const handleEditChange = (e) => {
     const { name, value } = e.target;
-
     setEditProduct({
       ...editProduct,
       [name]: name === "price" || name === "quantity" ? Number(value) || 0 : value,
     });
-  };
-
-  const handleEditSubmit = async () => {
-    try {
-      await axios.patch(`/api/admin/products/${editProduct.id}`, {
-        name: editProduct.name,
-        shortDescription: editProduct.shortDescription,
-        longDescription: editProduct.longDescription,
-        price: parseFloat(editProduct.price),
-        quantity: parseInt(editProduct.quantity),
-      });
-
-      setProducts(products.map((p) => (p.id === editProduct.id ? editProduct : p)));
-      setEditProduct(null);
-    } catch (error) {
-      console.error("Error updating product:", error);
-    }
   };
 
   const handleAddProductChange = (e) => {
@@ -97,31 +77,107 @@ const Admin = () => {
     });
   };
 
+  const handleFileChange = (e) => {
+    const files = e.target.files;
+    setNewProduct({
+      ...newProduct,
+      images: files, // Store the selected files in state
+    });
+  };
+
+  const handleImageUpload = async (productId, files) => {
+    const formData = new FormData();
+    for (let i = 0; i < files.length; i++) {
+      formData.append("images", files[i]); // Use "images" as the key
+    }
+  
+    try {
+      await axios.post(
+        `/api/admin/products/${productId}/images`, // API endpoint for image upload
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log("Images uploaded successfully!");
+    } catch (error) {
+      console.error("Error uploading images:", error);
+    }
+  };
+  
+
+  const handleDeleteImage = async (imageId) => {
+    try {
+      await axios.delete(`/api/admin/products/${editProduct.id}/images/${imageId}`);
+      setEditProduct({
+        ...editProduct,
+        images: editProduct.images.filter((img) => img.id !== imageId), // Remove deleted image from state
+      });
+    } catch (error) {
+      console.error("Error deleting image:", error);
+    }
+  };
+
   const handleAddProductSubmit = async (e) => {
     e.preventDefault();
-
+  
     try {
-      const response = await axios.post("/api/admin/products", newProduct);
-      const addedProduct = {
-        id: response.data.id,
-        name: response.data.name,
-        shortDescription: response.data.shortDescription,
-        longDescription: response.data.longDescription,
-        price: response.data.price,
-        quantity: response.data.inventory.quantity,
-      };
-
-      setProducts([...products, addedProduct]);
+      // First, create the product (without images)
+      const response = await axios.post("/api/admin/products", {
+        name: newProduct.name,
+        shortDescription: newProduct.shortDescription,
+        longDescription: newProduct.longDescription,
+        price: newProduct.price,
+        quantity: newProduct.quantity,
+      });
+  
+      const productId = response.data.id; // Get the new product ID
+  
+      // If images were selected, upload them
+      if (newProduct.images.length > 0) {
+        await handleImageUpload(productId, newProduct.images);
+      }
+  
+      // Refresh product list
+      setProducts([...products, response.data]);
+  
+      // Reset form
+      setShowAddProductForm(false);
       setNewProduct({
         name: "",
         shortDescription: "",
         longDescription: "",
         price: 0,
         quantity: 0,
+        images: [],
       });
-      setShowAddProductForm(false);
+  
     } catch (error) {
       console.error("Error adding product:", error);
+    }
+  };
+  
+  
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+  
+    try {
+      const response = await axios.patch(`/api/admin/products/${editProduct.id}`, editProduct);
+      setProducts(products.map((product) =>
+        product.id === editProduct.id ? response.data : product
+      ));
+  
+      // If new images were selected, upload them
+      if (newProduct.images.length > 0) {
+        await handleImageUpload(editProduct.id, newProduct.images);
+      }
+  
+      setEditProduct(null); // Close the edit form
+    } catch (error) {
+      console.error("Error editing product:", error);
     }
   };
 
@@ -183,6 +239,18 @@ const Admin = () => {
                 required
               />
 
+              <label>Images:</label>
+              <input
+                type="file"
+                multiple
+                onChange={handleFileChange} // Use the new handler
+              />
+              <div>
+                {newProduct.images && Array.from(newProduct.images).map((img, index) => (
+                  <img key={index} src={URL.createObjectURL(img)} alt={`Product image ${index + 1}`} width={100} />
+                ))}
+              </div>
+
               <button type="submit">Add Product</button>
             </form>
           </div>
@@ -201,6 +269,13 @@ const Admin = () => {
                 {product.name} - ${product.price.toFixed(2)}
               </span>
               <div className="product-actions">
+                {product.images && product.images.length > 0 && (
+                  <div>
+                    {product.images.map((img, index) => (
+                      <img key={index} src={img.url} alt={`Product image ${index + 1}`} width={50} />
+                    ))}
+                  </div>
+                )}
                 <button onClick={() => handleEditClick(product)}>Edit</button>
                 <button onClick={() => deleteProduct(product.id)}>Delete</button>
               </div>
@@ -209,67 +284,68 @@ const Admin = () => {
         </ul>
       )}
 
-      <h3>Manage Users</h3>
-      <ul className="user-list">
-        {users.map((user) => (
-          <li key={user.id}>
-            {user.name} - {user.blocked ? "Blocked" : "Active"}
-            <button onClick={() => toggleBlockUser(user.id)}>
-              {user.blocked ? "Unblock" : "Block"}
-            </button>
-          </li>
-        ))}
-      </ul>
-
-      <h3>Orders</h3>
-      <ul className="order-list">
-        {orders.map((order) => (
-          <li key={order.id}>
-            {order.user} - {order.status}
-          </li>
-        ))}
-      </ul>
-
       {editProduct && (
         <div className="modal-overlay" onClick={() => setEditProduct(null)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <h3>Edit Product</h3>
-            <label>Name:</label>
-            <input type="text" name="name" value={editProduct.name} onChange={handleEditChange} />
+            <form onSubmit={handleEditSubmit}>
+              <label>Name:</label>
+              <input
+                type="text"
+                name="name"
+                value={editProduct.name}
+                onChange={handleEditChange}
+              />
 
-            <label>Short Description:</label>
-            <input
-              type="text"
-              name="shortDescription"
-              value={editProduct.shortDescription}
-              onChange={handleEditChange}
-            />
+              <label>Short Description:</label>
+              <input
+                type="text"
+                name="shortDescription"
+                value={editProduct.shortDescription}
+                onChange={handleEditChange}
+              />
 
-            <label>Long Description:</label>
-            <textarea
-              name="longDescription"
-              value={editProduct.longDescription}
-              onChange={handleEditChange}
-            />
+              <label>Long Description:</label>
+              <textarea
+                name="longDescription"
+                value={editProduct.longDescription}
+                onChange={handleEditChange}
+              />
 
-            <label>Price:</label>
-            <input
-              type="number"
-              name="price"
-              value={editProduct.price}
-              onChange={handleEditChange}
-            />
+              <label>Price:</label>
+              <input
+                type="number"
+                name="price"
+                value={editProduct.price}
+                onChange={handleEditChange}
+              />
 
-            <label>Quantity:</label>
-            <input
-              type="number"
-              name="quantity"
-              value={editProduct.quantity}
-              onChange={handleEditChange}
-            />
+              <label>Quantity:</label>
+              <input
+                type="number"
+                name="quantity"
+                value={editProduct.quantity}
+                onChange={handleEditChange}
+              />
 
-            <button onClick={handleEditSubmit}>Save</button>
-            <button onClick={() => setEditProduct(null)}>Cancel</button>
+              <label>Images:</label>
+              <input
+                type="file"
+                multiple
+                onChange={handleFileChange} // Use the new handler
+              />
+              <div>
+                {editProduct.images && editProduct.images.map((img, index) => (
+                  <div key={index}>
+                    <img src={img.url} alt={`Product image ${index + 1}`} width={100} />
+                    <button onClick={() => handleDeleteImage(img.id)}>Delete</button>
+                  </div>
+                ))}
+              </div>
+
+              <button type="submit">Save</button>
+              <button onClick={() => setEditProduct(null)}>Cancel</button>
+            </form>
           </div>
         </div>
       )}
