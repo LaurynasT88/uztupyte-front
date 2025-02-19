@@ -16,30 +16,32 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="navbar">
-      {/* Show Home only if NOT an admin */}
-      {!isAdmin && (
-        <NavLink to="/" className={({ isActive }) => (isActive ? "active" : "")}>
-          Home
-        </NavLink>
-      )}
+      <nav className="navbar">
+        <div className="navbar-links">
+          {/* Show Home only if NOT an admin */}
+          {!isAdmin && !isAuthenticated && (
+              <NavLink to="/" className={({ isActive }) => (isActive ? "active" : "")}>
+                Home
+              </NavLink>
+          )}
 
-      {/* Show Admin Panel if user is an admin */}
-      {isAdmin && (
-        <NavLink to="/admin" className={({ isActive }) => (isActive ? "active" : "")}>
-          Admin Panel
-        </NavLink>
-      )}
+          {/* Show Admin Panel if user is an admin */}
+          {isAdmin && (
+              <NavLink to="/admin" className={({ isActive }) => (isActive ? "active" : "")}>
+                Admin Panel
+              </NavLink>
+          )}
 
-      {/* Show Logout if authenticated, otherwise show Login */}
-      {isAuthenticated ? (
-        <button onClick={handleLogout} className="logout-btn">Logout</button>
-      ) : (
-        <NavLink to="/login" className={({ isActive }) => (isActive ? "active" : "")}>
-          Login
-        </NavLink>
-      )}
-    </nav>
+          {/* Show Logout if authenticated, otherwise show Login */}
+          {isAuthenticated ? (
+              <button onClick={handleLogout} className="logout-btn">Logout</button>
+          ) : (
+              <NavLink to="/login" className={({ isActive }) => (isActive ? "active" : "")}>
+                Login
+              </NavLink>
+          )}
+        </div>
+      </nav>
   );
 };
 
