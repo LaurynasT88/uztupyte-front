@@ -68,17 +68,18 @@ const Admin = () => {
   // Upload image
   const handleImageUpload = async (productId, file) => {
     const formData = new FormData();
-    formData.append("image", file);
+    formData.append("images", file);
 
     try {
-      await axios.post(`/api/admin/products/${productId}/image`, formData, {
+      await axios.post(`/api/admin/products/${productId}/images`, formData, {
+
         headers: { "Content-Type": "multipart/form-data" },
-      });
-      console.log("Image uploaded successfully!");
-    } catch (error) {
-      console.error("Error uploading image:", error);
-    }
-  };
+    });
+    console.log("Image uploaded successfully!");
+  } catch (error) {
+    console.error("Error uploading image:", error);
+  }
+};
 
   // Save edited product
   const handleEditSubmit = async (e) => {
