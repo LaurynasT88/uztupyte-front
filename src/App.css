@@ -625,7 +625,12 @@
         border-radius: 5px;
         margin-right: 10px;
     }
-
+    logo {
+        background-image: url('https://cdn11.bigcommerce.com/s-x49po/images/stencil/1500x1500/products/62041/261586/1607601332291_IMG_20201128_134909__85629.1687170945.jpg?c=2');
+        width: 100px;
+        height: 100px;
+        background-size: cover;
+    }
 
 
 
