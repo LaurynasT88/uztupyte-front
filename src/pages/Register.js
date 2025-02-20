@@ -25,7 +25,7 @@ const Register = () => {
         lastName,
         role,
       });
-      setSuccess("Registration successful! Please login.");
+      setSuccess("Registration successful! Verification link has been sent to your email.");
       setError("");
       setTimeout(() => navigate("/login"), 2000); // Redirect to login after 2 seconds
     } catch (err) {
