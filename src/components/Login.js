@@ -25,9 +25,20 @@ const Login = () => {
 
       userRoles.includes("ADMIN") ? navigate("/admin") : navigate("/");
     } catch (err) {
-      setError("Invalid username or password");
+      if (err.response) {
+        if (err.response.data.failureReason && err.response.data.failureReason.includes("User not verified")) {
+          setError("User not verified, please check your email for the verification link.");
+        } else {
+          setError("Invalid username or password");
+        }
+      } else {
+        setError("An error occurred, please try again later.");
+      }
     }
   };
+
+
+
 
   const handleForgotPassword = async (e) => {
     e.preventDefault();
