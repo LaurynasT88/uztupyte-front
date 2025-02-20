@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "../services/api";
 import { useNavigate, Link } from "react-router-dom";
+import '../Login.css';  // Reuse the Login.css for consistency
 
 const Register = () => {
   const [username, setUsername] = useState("");
@@ -35,63 +36,63 @@ const Register = () => {
   };
 
   return (
-    <div className="register-container">
-      <h2>Register</h2>
-      <form onSubmit={handleRegister}>
-        <div>
-          <label>Username:</label>
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Password:</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Email:</label>
-          <input
-            type="text"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>First Name:</label>
-          <input
-            type="text"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Last Name:</label>
-          <input
-            type="text"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            required
-          />
-        </div>
+      <div className="login-container">
+        <h2>Register</h2>
+        <form onSubmit={handleRegister}>
+          <div>
+            <label>Username:</label>
+            <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+            />
+          </div>
+          <div>
+            <label>Password:</label>
+            <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+            />
+          </div>
+          <div>
+            <label>Email:</label>
+            <input
+                type="text"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+            />
+          </div>
+          <div>
+            <label>First Name:</label>
+            <input
+                type="text"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                required
+            />
+          </div>
+          <div>
+            <label>Last Name:</label>
+            <input
+                type="text"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                required
+            />
+          </div>
 
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        {success && <p style={{ color: "green" }}>{success}</p>}
-        <button type="submit">Register</button>
-      </form>
-      <p>
-        Already have an account? <Link to="/login">Login here</Link>.
-      </p>
-    </div>
+          {error && <p className="error-message">{error}</p>}  {/* Styled error message */}
+          {success && <p className="success-message">{success}</p>} {/* Styled success message */}
+          <button type="submit">Register</button>
+        </form>
+        <p>
+          Already have an account? <Link to="/login">Login here</Link>.
+        </p>
+      </div>
   );
 };
 
