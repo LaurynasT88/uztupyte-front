@@ -83,16 +83,7 @@ const Register = () => {
             required
           />
         </div>
-        <div>
-          <label>Role:</label>
-          <select
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-            required>
-            <option value="USER">User</option>
-            <option value="ADMIN">Admin</option>
-          </select>
-        </div>
+
         {error && <p style={{ color: "red" }}>{error}</p>}
         {success && <p style={{ color: "green" }}>{success}</p>}
         <button type="submit">Register</button>
