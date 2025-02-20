@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
     const [products, setProducts] = useState([]);
@@ -8,8 +9,8 @@ const Home = () => {
     const [error, setError] = useState(null);
     const [expandedProduct, setExpandedProduct] = useState(null);
     const [cartOpen, setCartOpen] = useState(true);
+    const navigate = useNavigate(); // ✅ Correctly place this here
 
-    // Fetch products from the API
     useEffect(() => {
         const fetchProducts = async () => {
             try {
@@ -25,22 +26,18 @@ const Home = () => {
         fetchProducts();
     }, []);
 
-    // Function to add product to the cart
     const addToCart = (product) => {
         setCart([...cart, product]);
     };
 
-    // Function to remove product from the cart
     const removeFromCart = (index) => {
         setCart(cart.filter((_, i) => i !== index));
     };
 
-    // Function to calculate the total price of the cart
     const calculateTotal = () => {
         return cart.reduce((total, item) => total + item.price, 0).toFixed(2);
     };
 
-    // Function to toggle cart visibility
     const toggleCart = () => {
         setCartOpen(prevState => !prevState);
     };
@@ -80,7 +77,16 @@ const Home = () => {
                 {cart.length > 0 && (
                     <>
                         <p className="cart-total visible">Total: ${calculateTotal()}</p>
-                        <button className="checkout-button visible">Proceed to Checkout</button>
+                        {/* ✅ Add navigate function here */}
+                        <button
+                            className="checkout-button visible"
+                            onClick={() => {
+                                console.log("Navigating to Checkout...");
+                                navigate("/checkout", { state: { cart } });
+                            }}
+                        >
+                            Proceed to Checkout
+                        </button>
                     </>
                 )}
             </div>
@@ -97,7 +103,7 @@ const Home = () => {
                         {products.map((product) => (
                             <div key={product.id} className="product-card">
                                 <img
-                                    src={`http://localhost:8080/api/products/${product.id}/images`} // Correct image URL
+                                    src={`http://localhost:8080/api/products/${product.id}/images`}
                                     alt={product.name}
                                     className="product-image"
                                 />

@@ -1,0 +1,44 @@
+/* Navbar container */
+.navbar {
+    background-color: #c2612d; /* Adjust color if needed */
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Base styles for all navbar links and buttons */
+.navbar-links a,
+.navbar-links button {
+    background-color: #6d4c41; /* Same background for all */
+    color: #ffd54f; /* Matching text color */
+    text-decoration: none;
+    font-weight: bold;
+    padding: 10px 15px;
+    border-radius: 5px;
+    border: none;
+    font-size: 16px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    cursor: pointer;
+}
+
+/* Hover effect */
+.navbar-links a:hover,
+.navbar-links button:hover {
+    background-color: #52372c;
+}
+
+/* Active link styling */
+.navbar-links .active {
+    background-color: #3e2723;
+}
+
+/* Logout button specific style */
+.logout-btn {
+    background-color: #a52a2a;
+    color: white;
+}
+
+.logout-btn:hover {
+    background-color: #8b0000;
+}
