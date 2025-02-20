@@ -4,6 +4,7 @@ import "../Admin.css";
 
 const Admin = () => {
   const [products, setProducts] = useState([]);
+  const [users, setUsers] = useState([]); // New state for users
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [editProduct, setEditProduct] = useState(null);
@@ -33,6 +34,24 @@ const Admin = () => {
     };
 
     fetchProducts();
+  }, []);
+
+  // Fetch users
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get("/user");  // Assuming the endpoint for fetching users is '/user'
+        if (Array.isArray(response.data)) {
+          setUsers(response.data);  // Set the users if it's an array
+        } else {
+          console.error("Unexpected response format:", response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+
+    fetchUsers();
   }, []);
 
   // Delete product
@@ -72,14 +91,13 @@ const Admin = () => {
 
     try {
       await axios.post(`/api/admin/products/${productId}/images`, formData, {
-
         headers: { "Content-Type": "multipart/form-data" },
-    });
-    console.log("Image uploaded successfully!");
-  } catch (error) {
-    console.error("Error uploading image:", error);
-  }
-};
+      });
+      console.log("Image uploaded successfully!");
+    } catch (error) {
+      console.error("Error uploading image:", error);
+    }
+  };
 
   // Save edited product
   const handleEditSubmit = async (e) => {
@@ -134,9 +152,7 @@ const Admin = () => {
 
   return (
       <div className="admin-container">
-        <div className="admin-header">
-         Product Control
-        </div>
+        <div className="admin-header">Product Control</div>
 
         <button className="add-product-btn" onClick={() => setShowAddProductForm(true)}>
           Add New Product
@@ -151,18 +167,18 @@ const Admin = () => {
               <ul className="product-list">
                 {products.map((product) => (
                     <li key={product.id} className="product-item">
-                      <img src={`http://localhost:8080/api/products/${product.id}/images`} alt={product.name}
-                           className="admin-product-image"/>
+                      <img
+                          src={`http://localhost:8080/api/products/${product.id}/images`}
+                          alt={product.name}
+                          className="admin-product-image"
+                      />
                       <span className="product-name">{product.name} - ${product.price.toFixed(2)}</span>
 
-                      <h2 style={{marginTop: "10px"}}>Short Description</h2>
-                      <br/>
+                      <h2 style={{ marginTop: "10px" }}>Short Description</h2>
                       <p>{product.shortDescription}</p>
 
-                      <h2 style={{marginTop: "15px"}}>Long Description</h2>
-                      <br/>
+                      <h2 style={{ marginTop: "15px" }}>Long Description</h2>
                       <p>{product.longDescription}</p>
-                      <br/>
 
                       <div className="product-actions">
                         <button onClick={() => handleEditClick(product)}>Edit</button>
@@ -183,10 +199,19 @@ const Admin = () => {
                   <input type="text" name="name" value={editProduct.name} onChange={handleEditChange} />
 
                   <label>Short Description:</label>
-                  <input type="text" name="shortDescription" value={editProduct.shortDescription} onChange={handleEditChange} />
+                  <input
+                      type="text"
+                      name="shortDescription"
+                      value={editProduct.shortDescription}
+                      onChange={handleEditChange}
+                  />
 
                   <label>Long Description:</label>
-                  <textarea name="longDescription" value={editProduct.longDescription} onChange={handleEditChange} />
+                  <textarea
+                      name="longDescription"
+                      value={editProduct.longDescription}
+                      onChange={handleEditChange}
+                  />
 
                   <label>Price:</label>
                   <input type="number" name="price" value={editProduct.price} onChange={handleEditChange} />
@@ -213,16 +238,30 @@ const Admin = () => {
                   <input type="text" name="name" value={newProduct.name} onChange={handleNewProductChange} />
 
                   <label>Short Description:</label>
-                  <input type="text" name="shortDescription" value={newProduct.shortDescription} onChange={handleNewProductChange} />
+                  <input
+                      type="text"
+                      name="shortDescription"
+                      value={newProduct.shortDescription}
+                      onChange={handleNewProductChange}
+                  />
 
                   <label>Long Description:</label>
-                  <textarea name="longDescription" value={newProduct.longDescription} onChange={handleNewProductChange} />
+                  <textarea
+                      name="longDescription"
+                      value={newProduct.longDescription}
+                      onChange={handleNewProductChange}
+                  />
 
                   <label>Price:</label>
                   <input type="number" name="price" value={newProduct.price} onChange={handleNewProductChange} />
 
                   <label>Quantity:</label>
-                  <input type="number" name="quantity" value={newProduct.quantity} onChange={handleNewProductChange} />
+                  <input
+                      type="number"
+                      name="quantity"
+                      value={newProduct.quantity}
+                      onChange={handleNewProductChange}
+                  />
 
                   <label>Image:</label>
                   <input type="file" onChange={handleNewProductFileChange} />
@@ -233,6 +272,38 @@ const Admin = () => {
               </div>
             </div>
         )}
+
+        <hr /> {/* Horizontal line to separate sections */}
+
+        <div className="user-control">
+          <h2 style={{ textAlign: "left", fontWeight: "bold", fontSize: "24px" }}>User Control</h2>
+          {users.length === 0 ? (
+              <p>No users available</p>
+          ) : (
+              <table className="user-table">
+                <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Username</th>
+                  <th>First Name</th>
+                  <th>Last Name</th>
+                  <th>Email</th>
+                </tr>
+                </thead>
+                <tbody>
+                {users.map((user) => (
+                    <tr key={user.id}>
+                      <td>{user.id}</td>
+                      <td>{user.username}</td>
+                      <td>{user.firstName}</td>
+                      <td>{user.lastName}</td>
+                      <td>{user.email}</td>
+                    </tr>
+                ))}
+                </tbody>
+              </table>
+          )}
+        </div>
       </div>
   );
 };
