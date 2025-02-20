@@ -26,12 +26,31 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    opacity: 1; /* Ensure it’s visible */
 }
 
-/* Collapsed Cart */
-.cart-collapsed .checkout-button {
-    visibility: hidden;
+/* When collapsed */
+.cart-collapsed {
+    transform: translateX(100%); /* Move the cart off screen */
+    opacity: 0; /* Hide the cart */
 }
+
+.remove-button {
+    background-color: transparent;
+    border: none;
+    color: red;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 10px;
+}
+
+.remove-button:hover {
+    color: darkred;
+}
+
+
 /* Toggle Button */
 .cart-toggle-btn {
     position: fixed;
